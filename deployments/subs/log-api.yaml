@@ -1,0 +1,37 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-api            # ✅ UNIQUE: e.g. log-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-api         # ✅ SAME as metadata.name
+  template:
+    metadata:
+      labels:
+        app: log-api       # ✅ SAME as above
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "log-api"     # ✅ UNIQUE DAPR APP ID
+        dapr.io/app-port: "8080"
+    spec:
+      containers:
+        - name: dapr-sample-api         # 🔁 this can stay same
+          image: dapr-sample-api        # 🔁 using the same image
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: log-api               # ✅ UNIQUE SERVICE
+spec:
+  selector:
+    app: log-api           # ✅ MATCH the label above
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

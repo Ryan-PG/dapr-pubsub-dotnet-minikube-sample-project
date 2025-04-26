@@ -1,0 +1,36 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dapr-sample-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dapr-sample-api
+  template:
+    metadata:
+      labels:
+        app: dapr-sample-api
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "dapr-sample-api"
+        dapr.io/app-port: "8080"
+    spec:
+      containers:
+        - name: dapr-sample-api
+          image: dapr-sample-api
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dapr-sample-api
+spec:
+  selector:
+    app: dapr-sample-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
